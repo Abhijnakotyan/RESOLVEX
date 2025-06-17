@@ -1,0 +1,18 @@
+/* LoginPage.css */
+@keyframes gradientAnimation {
+  0% {
+    background: linear-gradient(45deg, #57cc99, #caffea);
+  }
+  50% {
+    background: linear-gradient(45deg, #caffea, #57cc99);
+  }
+  100% {
+    background: linear-gradient(45deg, #57cc99, #caffea);
+  }
+}
+
+.animated-background {
+  animation: gradientAnimation 6s ease infinite;
+  background-size: 400% 400%;
+  height: 100vh;
+}
