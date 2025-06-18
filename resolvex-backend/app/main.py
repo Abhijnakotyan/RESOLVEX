@@ -7,7 +7,7 @@ from app.routes import (
 
 app = FastAPI()
 origins = [
-    "http://localhost:5174",
+    "*",
 ]
 # Allow frontend to communicate with backend (CORS)
 app.add_middleware(

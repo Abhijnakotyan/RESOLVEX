@@ -4,6 +4,8 @@ from passlib.context import CryptContext
 from bson.objectid import ObjectId
 from app.database.mongodb import db
 from app.schemas.user_schema import UserCreate, UserLogin
+from app.utils.jwt_utils import create_access_token
+from datetime import timedelta
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -47,7 +49,6 @@ class LoginRequest(BaseModel):
 # Login endpoint
 @router.post("/login")
 async def login_user(data: LoginRequest):
-    # Find user by username or email
     user = db.users.find_one({
         "$or": [
             {"email": data.username_or_email},
@@ -55,21 +56,23 @@ async def login_user(data: LoginRequest):
         ]
     })
 
-    if not user:
+    if not user or not pwd_context.verify(data.password, user["password"]):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found"
+            detail="Invalid credentials"
         )
 
-    if not pwd_context.verify(data.password, user["password"]):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid password"
-        )
+    access_token = create_access_token(user_id=str(user["_id"]))
 
+
+
+    
     return {
-        "message": "Login successful",
-        "user_id": str(user["_id"]),
-        "username": user["username"],
-        "email": user["email"]
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "id": str(user["_id"]),
+            "username": user["username"],
+            "email": user["email"]
+        }
     }
