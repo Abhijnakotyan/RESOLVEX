@@ -1,20 +1,21 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
+import Navbar from '../../components/Navbar';
 
 const UserDashboard = () => {
-    let user = null;
-    try {
-      const stored = localStorage.getItem("user");
-      if (stored && stored !== "undefined") {
-        user = JSON.parse(stored);
-      }
-    } catch (err) {
-      console.error("Error parsing user data:", err);
+  let user = null;
+  try {
+    const stored = localStorage.getItem("user");
+    if (stored && stored !== "undefined") {
+      user = JSON.parse(stored);
     }
+  } catch (err) {
+    console.error("Error parsing user data:", err);
+  }
 
   const navigate = useNavigate();
-  const userName = user?.name || 'User'; 
+  const displayName = user?.name || user?.username || 'User'; // ✅ prioritize name
+
   const cardData = [
     {
       title: 'Post Complaint',
@@ -36,9 +37,9 @@ const UserDashboard = () => {
   return (
     <>
       <Navbar />
-      <div className="max-w-5xl mx-auto px-4  py-10">
+      <div className="max-w-5xl mx-auto px-4 py-10">
         <h2 className="text-3xl font-bold mt-10 mb-10 text-center">
-           Welcome {user?.username || 'User'}!!
+          Welcome {displayName}!!
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

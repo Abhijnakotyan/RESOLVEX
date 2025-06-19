@@ -14,8 +14,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # Register endpoint
 @router.post("/register")
 async def register_user(user: UserCreate):
-    # Check for existing user by email or username
-    existing_user = db.users.find_one({
+    existing_user = await db.users.find_one({
         "$or": [
             {"email": user.email},
             {"username": user.username}
@@ -35,7 +34,8 @@ async def register_user(user: UserCreate):
         "password": hashed_password
     }
 
-    result = db.users.insert_one(new_user)
+    result = await db.users.insert_one(new_user)
+
     return {
         "message": "User registered successfully",
         "user_id": str(result.inserted_id)
@@ -49,7 +49,7 @@ class LoginRequest(BaseModel):
 # Login endpoint
 @router.post("/login")
 async def login_user(data: LoginRequest):
-    user = db.users.find_one({
+    user = await db.users.find_one({
         "$or": [
             {"email": data.username_or_email},
             {"username": data.username_or_email}
@@ -62,11 +62,8 @@ async def login_user(data: LoginRequest):
             detail="Invalid credentials"
         )
 
-    access_token = create_access_token(user_id=str(user["_id"]))
+    access_token = create_access_token(data={"user_id": str(user["_id"])})
 
-
-
-    
     return {
         "access_token": access_token,
         "token_type": "bearer",
@@ -75,4 +72,27 @@ async def login_user(data: LoginRequest):
             "username": user["username"],
             "email": user["email"]
         }
+    }
+
+class DepartmentLogin(BaseModel):
+    email: EmailStr
+    password: str
+    department_name: str
+
+@router.post("/department/login")
+async def department_login(dept: DepartmentLogin):
+    # Use await for async MongoDB call
+    department_user = await db.departments.find_one({
+        "email": dept.email,
+        "department_name": dept.department_name
+    })
+
+    # Check if user exists and password matches
+    if not department_user or not pwd_context.verify(dept.password, department_user["password"]):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+
+    return {
+        "message": "Login successful",
+        "department": department_user["department_name"],
+        "email": department_user["email"]
     }

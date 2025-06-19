@@ -5,7 +5,7 @@ from bson.objectid import ObjectId
 
 complaints_collection = db["complaints"]
 
-def create_complaint(data: dict):
+async def create_complaint(data: dict):
     data["timestamp"] = datetime.utcnow()
 
     # If anonymous, remove PII
@@ -16,13 +16,13 @@ def create_complaint(data: dict):
         data.pop("name", None)
         data.pop("role", None)
 
-    result = complaints_collection.insert_one(data)
+    result =await complaints_collection.insert_one(data)
     return str(result.inserted_id)
 async def get_complaints_by_user(user_id):
-    complaints = []
-    cursor = db.complaints.find({"user_id": ObjectId(current_user["_id"])})
+    cursor = db.complaints.find({"user_id": user_id})  # No ObjectId here
     complaints = await cursor.to_list(length=100)
     return complaints
+
 
 
 
