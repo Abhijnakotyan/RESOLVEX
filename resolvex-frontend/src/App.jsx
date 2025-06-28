@@ -9,11 +9,15 @@ import UserProfile from "./pages/User/UserProfile";
 import LandingPage from "./pages/LandingPage";
 import DepartmentLogin from "./pages/Department/DepartmentLogin";
 import DepartmentDashboard from "./pages/Department/DepartmentDashboard";
+import AuthCard from "./pages/User/AuthCard";
+import TrackComplaintPage from './pages/TrackComplaintPage';
+
 const App = () => {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/authCard" element={<AuthCard/>}/>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegistrationPage />} />
         <Route path="/userdashboard" element={<Dashboard/>}/>
@@ -22,6 +26,7 @@ const App = () => {
         <Route path="/profile" element={<UserProfile/>}/>
         <Route path="/departmentlogin" element={<DepartmentLogin/>}/>
         <Route path="/department/:departmentName" element={<DepartmentDashboard />} />
+        <Route path="/track-complaint" element={<TrackComplaintPage />} />
         </Routes>
     </Router>
   );

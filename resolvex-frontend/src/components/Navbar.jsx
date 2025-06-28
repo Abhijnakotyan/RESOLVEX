@@ -33,6 +33,9 @@ const Navbar = () => {
         <>
           <a href="/" className="text-white font-bold text-base hover:underline">Home</a>
           <a href="/complaintform" className="text-white font-bold text-base hover:underline">Submit Complaint</a>
+          <a href="/track-complaint" className="text-white hover:underline ml-4">
+          Track Complaint
+        </a>
         </>
       );
     }

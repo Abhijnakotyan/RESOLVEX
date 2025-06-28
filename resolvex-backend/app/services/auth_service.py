@@ -11,12 +11,11 @@ async def get_current_user(authorization: str = Header(...)):
             raise HTTPException(status_code=401, detail="Invalid auth scheme")
 
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = payload.get("sub")  # 'sub' should be set in token
+        user_id = payload.get("user_id")  # ✅ fixed key
 
         if not user_id:
             raise HTTPException(status_code=401, detail="Invalid token payload")
 
-        # ✅ Correct async MongoDB call
         user = await db.users.find_one({"_id": ObjectId(user_id)})
         if not user:
             raise HTTPException(status_code=401, detail="User not found")

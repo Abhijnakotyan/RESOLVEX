@@ -10,12 +10,13 @@ class ComplaintCreate(BaseModel):
     anonymous: bool
     name: str | None = None
     role: str | None = None
-    user_id: Optional[str] = None 
+  
 
 
 class ComplaintResponse(ComplaintCreate):
     id: Optional[str]
     status: Optional[str] = "Pending"
+    tracking_token:Optional[str]
 
     class Config:
         from_attributes = True

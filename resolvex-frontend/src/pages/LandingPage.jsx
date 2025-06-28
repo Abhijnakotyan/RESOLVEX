@@ -30,19 +30,20 @@ const LandingPage = () => {
             AI-powered Complaint Management System for Transparent Resolution
           </p>
           <div className="flex flex-col md:flex-row justify-center gap-4">
-            <Link to="/login">
-              <button className="bg-white text-blue-900 px-6 py-3 rounded-xl shadow-md hover:bg-gray-100 font-semibold transition">
-                Login
+           
+            <Link to="/complaintform">
+              <button className="text-white px-6 py-3 border rounded-xl font-semibold transition">
+                Submit Anonymously
               </button>
             </Link>
-            <Link to="/complaintform">
-              <button className="bg-transparent border border-white text-white px-6 py-3 rounded-xl hover:bg-white hover:text-blue-900 font-semibold transition">
-                Submit Anonymously
+             <Link to="/authCard">
+              <button className="text-white px-6 py-3 border rounded-xl font-semibold transition">
+                Login
               </button>
             </Link>
             <button
               onClick={goToDepartmentLogin}
-              className=" text-white px-6 py-3  rounded-xl font-semibold transition"
+              className=" text-white px-6 py-3  rounded-xl border font-semibold transition"
             >
               Department Login
             </button>
@@ -66,4 +67,3 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
-600

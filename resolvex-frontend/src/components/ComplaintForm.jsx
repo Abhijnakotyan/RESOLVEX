@@ -68,8 +68,17 @@ const ComplaintForm = () => {
     }
 
     try {
-      await submitComplaint(complaintData);
-      alert('Complaint submitted successfully!');
+      const response = await submitComplaint(complaintData); // capture response
+
+      if (anonymous && response.tracking_token) {
+        alert(
+          `✅ Complaint submitted anonymously!\n🔐 Your tracking token: ${response.tracking_token}\n\n📌 Please save this token to track your complaint status later.`
+        );
+      } else {
+        alert('✅ Complaint submitted successfully!');
+      }
+
+      // Reset form
       setName('');
       setRole('');
       setMainDept('');
