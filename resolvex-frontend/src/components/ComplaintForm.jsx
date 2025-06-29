@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { submitComplaint } from '../services/complaintService';
 import Navbar from './Navbar';
 import CustomButton from './Button';
@@ -13,6 +14,10 @@ const departmentOptions = {
 const urgencyLevels = ['Low', 'Medium', 'High'];
 
 const ComplaintForm = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const anonymousFromLanding = location.state?.anonymousMode || false;
+
   const [name, setName] = useState('');
   const [role, setRole] = useState('');
   const [mainDept, setMainDept] = useState('');
@@ -20,7 +25,7 @@ const ComplaintForm = () => {
   const [subject, setSubject] = useState('');
   const [description, setDescription] = useState('');
   const [urgency, setUrgency] = useState('');
-  const [anonymous, setAnonymous] = useState(false);
+  const [anonymous, setAnonymous] = useState(anonymousFromLanding);
   const [formErrors, setFormErrors] = useState({});
 
   const handleMainDeptChange = (e) => {
@@ -68,7 +73,7 @@ const ComplaintForm = () => {
     }
 
     try {
-      const response = await submitComplaint(complaintData); // capture response
+      const response = await submitComplaint(complaintData);
 
       if (anonymous && response.tracking_token) {
         alert(
@@ -86,7 +91,7 @@ const ComplaintForm = () => {
       setSubject('');
       setDescription('');
       setUrgency('');
-      setAnonymous(false);
+      setAnonymous(anonymousFromLanding); // Reset based on how they came
       setFormErrors({});
     } catch (error) {
       console.error("Complaint submission failed:", error);
@@ -108,7 +113,15 @@ const ComplaintForm = () => {
           <input
             type="checkbox"
             checked={anonymous}
-            onChange={() => setAnonymous(!anonymous)}
+            onChange={(e) => {
+              const checked = e.target.checked;
+              if (!checked && anonymousFromLanding) {
+                alert("🔒 You must log in to submit complaints with your identity.");
+                navigate("/authCard");
+                return;
+              }
+              setAnonymous(checked);
+            }}
             className="mr-2"
             id="anonymous"
           />

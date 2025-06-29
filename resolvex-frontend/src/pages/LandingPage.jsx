@@ -31,11 +31,12 @@ const LandingPage = () => {
           </p>
           <div className="flex flex-col md:flex-row justify-center gap-4">
            
-            <Link to="/complaintform">
-              <button className="text-white px-6 py-3 border rounded-xl font-semibold transition">
-                Submit Anonymously
-              </button>
-            </Link>
+           <Link to="/complaintform" state={{ anonymousMode: true }}>
+          <button className="text-white px-6 py-3 border rounded-xl font-semibold transition">
+            Submit Anonymously
+          </button>
+        </Link>
+
              <Link to="/authCard">
               <button className="text-white px-6 py-3 border rounded-xl font-semibold transition">
                 Login

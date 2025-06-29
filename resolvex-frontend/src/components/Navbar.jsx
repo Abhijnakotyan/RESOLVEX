@@ -4,7 +4,10 @@ import logo from '../assets/logo.png';
 const Navbar = () => {
   const role = localStorage.getItem("role"); // Should be "user", "department", or "anonymous"
   const department = localStorage.getItem("department_name") || "mca";
-
+  const handleuserLogout =()=>{
+    localStorage.clear();
+    window.location.href="/authcard";
+  }
   const handleLogout = () => {
     localStorage.clear();
     window.location.href = "/login";
@@ -16,7 +19,7 @@ const Navbar = () => {
         <>
           <a href="/userdashboard" className="text-white font-bold text-base hover:underline">Home</a>
           <a href="/complaintform" className="text-white font-bold text-base hover:underline">Submit Complaint</a>
-          <button onClick={handleLogout} className="text-white font-bold text-base hover:underline">Logout</button>
+          <button onClick={handleuserLogout} className="text-white font-bold text-base hover:underline">Logout</button>
         </>
       );
     } else if (role === "department") {

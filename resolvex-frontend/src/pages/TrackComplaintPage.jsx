@@ -1,63 +1,51 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
-function TrackComplaintPage() {
+function TrackComplaint() {
   const [token, setToken] = useState('');
-  const [complaint, setComplaint] = useState(null);
-  const [error, setError] = useState('');
+  const [result, setResult] = useState(null);
 
   const handleTrack = async () => {
-    if (!token.trim()) {
-      setError("Please enter a valid token.");
-      return;
-    }
-
     try {
-      const response = await fetch(`http://localhost:8000/api/complaints/token/${token}`);
-      if (!response.ok) throw new Error("Not Found");
-
-      const data = await response.json();
-      setComplaint(data);
-      setError('');
+      const res = await axios.get(`http://localhost:8000/api/complaints/track/${token}`);
+      setResult(res.data);
     } catch (err) {
-      setComplaint(null);
-      setError("❌ No complaint found for this token.");
+      setResult({ error: "Not found or invalid token." });
     }
   };
 
   return (
-    <div className="max-w-xl mx-auto mt-10 bg-white p-6 shadow-lg rounded">
-      <h2 className="text-2xl font-bold text-center mb-6">Track Your Complaint</h2>
-
+    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded shadow">
+      <h2 className="text-2xl font-semibold mb-4">Track Complaint</h2>
       <input
         type="text"
-        placeholder="Enter tracking token"
+        placeholder="Enter 4-digit token"
+        className="w-full border p-2 rounded mb-4"
         value={token}
         onChange={(e) => setToken(e.target.value)}
-        className="w-full border border-gray-300 p-2 rounded mb-4"
       />
-
       <button
         onClick={handleTrack}
-        className="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700"
+        className="bg-blue-500 text-white px-4 py-2 rounded"
       >
-        Track Complaint
+        Track
       </button>
-
-      {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
-
-      {complaint && (
-        <div className="mt-6 border-t pt-4">
-          <p><strong>Department:</strong> {complaint.department}</p>
-          <p><strong>Sub Department:</strong> {complaint.sub_department || 'N/A'}</p>
-          <p><strong>Subject:</strong> {complaint.subject}</p>
-          <p><strong>Description:</strong> {complaint.description}</p>
-          <p><strong>Status:</strong> {complaint.status || 'Pending'}</p>
-          <p><strong>Urgency:</strong> {complaint.urgency}</p>
-          <p><strong>Submitted On:</strong> {new Date(complaint.timestamp).toLocaleString()}</p>
+      {result && (
+        <div className="mt-4">
+          {result.error ? (
+            <p className="text-red-500">{result.error}</p>
+          ) : (
+            <div>
+              <p><strong>Subject:</strong> {result.subject}</p>
+              <p><strong>Status:</strong> {result.status}</p>
+              <p><strong>Department:</strong> {result.department}</p>
+              <p><strong>Submitted On:</strong> {new Date(result.submitted_on).toLocaleString()}</p>
+            </div>
+          )}
         </div>
       )}
     </div>
   );
 }
 
-export default TrackComplaintPage;
+export default TrackComplaint;

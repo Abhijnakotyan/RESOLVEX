@@ -1,54 +1,57 @@
-from app.database.mongodb import complaints_collection
-from app.schemas.complaint_schema import ComplaintCreate
-from datetime import datetime, timedelta
-import uuid
+from app.database.mongodb import db
+from app.utils.token_utils import generate_tracking_token
+from datetime import datetime
+from bson import ObjectId
 
+async def create_complaint(data, user=None):
+    complaint = {
+        "name": data.name if not data.anonymous else None,
+        "role": data.role if not data.anonymous else None,
+        "department": data.department,
+        "sub_department": data.subDepartment,
+        "subject": data.subject,
+        "description": data.description,
+        "urgency": data.urgency,
+        "anonymous": data.anonymous,
+        "status": "Pending",
+        "created_at": datetime.utcnow(),
+    }
 
-def submit_complaint(data: ComplaintCreate):
-    complaint = data.dict()
-    complaint["status"] = "Pending"
-    complaint["created_at"] = datetime.utcnow()
+    if user:
+        print("📌 Saving complaint for user ID:", user["_id"], type(user["_id"]))
+        complaint["user_id"] = ObjectId(user["_id"])  
+
     if data.anonymous:
-        token = str(uuid.uuid4())
-        complaint["anonymous_token"] = token
-        complaints_collection.insert_one(complaint)
-        return {"message": "Anonymous complaint submitted", "track_token": token}
-    else:
-        complaints_collection.insert_one(complaint)
-        return {"message": "Complaint submitted"}
+        complaint["tracking_token"] = generate_tracking_token()
+
+    result = await db.complaints.insert_one(complaint)
+    return {
+        "message": "Complaint submitted",
+        "id": str(result.inserted_id),
+        "tracking_token": complaint.get("tracking_token")
+    }
+
+async def get_complaint_by_token(token):
+    return await db.complaints.find_one({"tracking_token": token})
+
+# async def get_complaints_by_user(user_id):
+#     complaints = await db.complaints.find({"user_id": ObjectId(user_id)}).to_list(length=100)
+#     for c in complaints:
+#         c["_id"] = str(c["_id"])
+#     return complaints
+async def get_complaints_by_user(user_id):
+    print("🔍 Querying complaints for user_id:", user_id, type(user_id))
+
+    complaints = await db.complaints.find({
+        "user_id": ObjectId(user_id)
+    }).to_list(length=100)
+
+    print(f"📦 Found {len(complaints)} complaints")
+
+    for c in complaints:
+        c["_id"] = str(c["_id"])
+        c["user_id"] = str(c["user_id"])  # 👈 ADD THIS LINE
+
+    return complaints
 
 
-def get_user_complaints_by_id(user_id: str):
-    data = list(complaints_collection.find({"user_id": user_id}))
-    for d in data:
-        d["_id"] = str(d["_id"])
-    return data
-
-
-def get_complaints_by_token(token: str):
-    data = list(complaints_collection.find({"anonymous_token": token}))
-    for d in data:
-        d["_id"] = str(d["_id"])
-    return data
-
-
-def get_department_complaints(dept_name: str):
-    data = list(complaints_collection.find({"department": dept_name}))
-    for d in data:
-        d["_id"] = str(d["_id"])
-    return data
-
-
-def get_all_complaints():
-    data = list(complaints_collection.find())
-    for d in data:
-        d["_id"] = str(d["_id"])
-    return data
-
-
-def get_delayed_complaints():
-    threshold = datetime.utcnow() - timedelta(days=7)
-    data = list(complaints_collection.find({"status": "Pending", "created_at": {"$lt": threshold}}))
-    for d in data:
-        d["_id"] = str(d["_id"])
-    return data
