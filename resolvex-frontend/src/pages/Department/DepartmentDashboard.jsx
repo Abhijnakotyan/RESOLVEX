@@ -5,9 +5,12 @@ import SidebarLayout from '../../components/Sidebar';
 import Feedback from './DepartmentFeedback';
 import Rankings from './DepartmentRankings';
 import Home from './DepartmentHome';
+import ComplaintDetails from './ComplaintDetails';
+import ManageComplaints from './ManageComplaints';
 
 const DepartmentDashboard = () => {
-  const { departmentName } = useParams();
+  const  {departmentName}  =useParams();
+  const departmentId=localStorage.getItem("department_id");
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -25,7 +28,7 @@ const DepartmentDashboard = () => {
     if (activeTab === 'home') {
       const fetchComplaints = async () => {
         try {
-          const res = await axios.get(`http://localhost:8000/complaints/${departmentName}`);
+          const res = await axios.get(`http://localhost:8000/api/complaints/department/${departmentId}`);
           setComplaints(res.data);
         } catch (err) {
           console.error('Failed to fetch complaints:', err);
@@ -47,6 +50,10 @@ const DepartmentDashboard = () => {
         return <Feedback department={departmentName} />;
       case 'rankings':
         return <Rankings department={departmentName} />;
+      case 'complaints':
+        return <ComplaintDetails complaints={complaints} loading={loading} error={error} />;
+      case 'manage':
+        return <ManageComplaints departmentId={departmentId} />;
       default:
         return <div className="p-6 text-gray-600">Coming soon...</div>;
     }

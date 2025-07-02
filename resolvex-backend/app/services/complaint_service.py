@@ -1,13 +1,19 @@
 from app.database.mongodb import db
 from app.utils.token_utils import generate_tracking_token
+from app.schemas.complaint_schema import ComplaintOut
 from datetime import datetime
 from bson import ObjectId
 
 async def create_complaint(data, user=None):
+
+    department = await db.departments.find_one({"department_name": data.department})
+    if not department:
+        raise Exception("❌ Department not found")
+
     complaint = {
         "name": data.name if not data.anonymous else None,
         "role": data.role if not data.anonymous else None,
-        "department": data.department,
+        "department_id": department["_id"],  
         "sub_department": data.subDepartment,
         "subject": data.subject,
         "description": data.description,
@@ -18,7 +24,6 @@ async def create_complaint(data, user=None):
     }
 
     if user:
-        print("📌 Saving complaint for user ID:", user["_id"], type(user["_id"]))
         complaint["user_id"] = ObjectId(user["_id"])  
 
     if data.anonymous:
@@ -34,24 +39,31 @@ async def create_complaint(data, user=None):
 async def get_complaint_by_token(token):
     return await db.complaints.find_one({"tracking_token": token})
 
-# async def get_complaints_by_user(user_id):
-#     complaints = await db.complaints.find({"user_id": ObjectId(user_id)}).to_list(length=100)
-#     for c in complaints:
-#         c["_id"] = str(c["_id"])
-#     return complaints
 async def get_complaints_by_user(user_id):
-    print("🔍 Querying complaints for user_id:", user_id, type(user_id))
-
     complaints = await db.complaints.find({
         "user_id": ObjectId(user_id)
     }).to_list(length=100)
 
-    print(f"📦 Found {len(complaints)} complaints")
-
+    results = []
     for c in complaints:
-        c["_id"] = str(c["_id"])
-        c["user_id"] = str(c["user_id"])  # 👈 ADD THIS LINE
+        department = await db.departments.find_one({"_id": c.get("department_id")})
+        department_name = department["department_name"] if department else "Unknown"
 
-    return complaints
+        results.append(ComplaintOut(
+            id=str(c["_id"]),
+            name=c.get("name"),
+            role=c.get("role"),
+            department_id=str(c.get("department_id", "")),
+            sub_department=c.get("sub_department", ""),
+            subject=c.get("subject", ""),
+            description=c.get("description", ""),
+            urgency=c.get("urgency", ""),
+            anonymous=c.get("anonymous", False),
+            status=c.get("status", "Pending"),
+            user_id=str(c.get("user_id", "")),
+            tracking_token=c.get("tracking_token", ""),
+            created_at=c.get("created_at"),
+            department=department_name  # You need to add this field to ComplaintOut
+        ))
 
-
+    return results

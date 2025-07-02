@@ -5,6 +5,7 @@ function ViewComplaints() {
   const [complaints, setComplaints] = useState([]);
   const [error, setError] = useState("");
 
+
   useEffect(() => {
     const fetchComplaints = async () => {
       try {
@@ -13,7 +14,7 @@ function ViewComplaints() {
           setError("Please log in to view your complaints.");
           return;
         }
-
+        
         const res = await axios.get("http://localhost:8000/api/complaints/my", {
           headers: {
             Authorization: `Bearer ${token}`,

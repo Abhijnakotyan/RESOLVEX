@@ -49,6 +49,10 @@ const DepartmentLogin = () => {
 
       alert("Login Successful!");
       console.log(res.data);
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("department", res.data.department_name);
+      localStorage.setItem("department_id", res.data.department_id);
+      localStorage.setItem("role", res.data.role);
 
     
       navigate(`/department/${department.toLowerCase()}`);
