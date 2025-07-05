@@ -1,8 +1,11 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status,Depends
 from passlib.context import CryptContext
 from app.schemas.user_schema import UserCreate, UserLogin
 from app.database.mongodb import db
 from app.utils.jwt_utils import create_access_token
+from app.services.auth_service import get_current_user
+from app.models.user_model import User
+
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

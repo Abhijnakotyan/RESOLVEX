@@ -8,7 +8,7 @@ class Complaint(BaseModel):
     id:Optional[PyObjectId]=Field(alias="_id")
     name: Optional[str]
     role: Optional[str]
-    department: str
+    department: Optional[str] 
     sub_department: Optional[str]
     subject: str
     description: str
