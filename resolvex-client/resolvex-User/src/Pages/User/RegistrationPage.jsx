@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import CustomButton from "../../components/Button";
+import CustomButton from "../../Component/Button";
 
 function RegistrationPage({ embedded = false }) {
   const [form, setForm] = useState({

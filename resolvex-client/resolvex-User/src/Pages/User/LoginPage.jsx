@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import CustomButton from "../../components/Button";
-import logo from "../../assets/logo.png";
+import CustomButton from "../../Component/Button";
+import logo from "../../../../assets/logo.png";
 
 function LoginPage({ embedded = false }) {
   const [username, setUsername] = useState('');

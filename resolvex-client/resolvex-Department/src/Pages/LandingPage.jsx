@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import logo from "../assets/logo.png";
-import background from "../assets/sjecmain.jpg";
+import logo from "../../../assets/logo.png";
+import background from "../../../assets/sjecmain.jpg";
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -30,18 +30,6 @@ const LandingPage = () => {
             AI-powered Complaint Management System for Transparent Resolution
           </p>
           <div className="flex flex-col md:flex-row justify-center gap-4">
-           
-           <Link to="/complaintform" state={{ anonymousMode: true }}>
-          <button className="text-white px-6 py-3 border rounded-xl font-semibold transition">
-            Submit Anonymously
-          </button>
-        </Link>
-
-             <Link to="/authCard">
-              <button className="text-white px-6 py-3 border rounded-xl font-semibold transition">
-                Login
-              </button>
-            </Link>
             <button
               onClick={goToDepartmentLogin}
               className=" text-white px-6 py-3  rounded-xl border font-semibold transition"

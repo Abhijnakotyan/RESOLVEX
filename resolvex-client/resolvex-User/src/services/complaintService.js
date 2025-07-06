@@ -5,7 +5,7 @@ export async function submitComplaint(complaintData) {
     name: complaintData.anonymous ? "Anonymous" : complaintData.name,
     role: complaintData.anonymous ? "Anonymous" : complaintData.role,
     department: complaintData.department,
-    subDepartment: complaintData.subDepartment,
+     category: complaintData.category,
     subject: complaintData.subject,
     description: complaintData.description,
     urgency: complaintData.urgency,

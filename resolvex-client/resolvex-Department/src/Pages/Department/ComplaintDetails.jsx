@@ -1,65 +1,72 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 const ComplaintDetails = ({ complaints = [], loading, error }) => {
-  const [expandedId, setExpandedId] = useState(null);
-
-  if (loading) return <div>Loading complaints...</div>;
-  if (error) return <div className="text-red-500">{error}</div>;
-
+  if (loading) return <p className="p-4 text-gray-600">Loading complaints...</p>;
+  if (error) return <p className="p-4 text-red-500">{error}</p>;
   if (!complaints || complaints.length === 0) {
-    return <div className="text-gray-500">No complaints found.</div>;
+    return <p className="p-4 text-gray-500">No complaints found.</p>;
   }
 
-  // Sort by date (newest first)
-  const sortedComplaints = [...complaints].sort(
-    (a, b) => new Date(b.created_at) - new Date(a.created_at)
-  );
-
-  const latestTwo = sortedComplaints.slice(0, 2);
-  const remaining = sortedComplaints.slice(2);
-
-  const toggleExpand = (id) => {
-    setExpandedId(prev => (prev === id ? null : id));
+  // Group complaints by status
+  const grouped = {
+    Pending: [],
+    "In Progress": [],
+    Resolved: [],
+    Rejected: [],
   };
 
-  const renderComplaint = (complaint) => (
-    <li
-      key={complaint.id || complaint._id}
-      className="bg-white p-4 rounded shadow cursor-pointer"
-      onClick={() => toggleExpand(complaint.id || complaint._id)}
-    >
-      <h3 className="font-bold text-lg">{complaint.subject}</h3>
-      <p className="text-gray-600">{complaint.description}</p>
-      <p className="text-sm mt-2">Status: <strong>{complaint.status}</strong></p>
-      <p className="text-xs text-gray-500">
-        Date: {complaint.created_at ? new Date(complaint.created_at).toLocaleString() : "Invalid date"}
-      </p>
+  complaints.forEach((complaint) => {
+    grouped[complaint.status]?.push(complaint);
+  });
 
-      {expandedId === (complaint.id || complaint._id) && (
-        <div className="mt-4 border-t pt-2 text-sm text-gray-700 space-y-1">
-          <p><strong>Name:</strong> {complaint.anonymous ? "Anonymous" : complaint.name}</p>
-          <p><strong>Role:</strong> {complaint.anonymous ? "Hidden" : complaint.role}</p>
-          <p><strong>Urgency:</strong> {complaint.urgency}</p>
-        </div>
-      )}
-    </li>
+  const renderTable = (complaintsList, status, colorClass = "text-gray-800") => (
+    <div key={status} className="mb-10">
+      <h2 className={`text-2xl font-bold mb-4 ${colorClass}`}>{status} Complaints</h2>
+      <table className="min-w-full border rounded shadow text-sm">
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="border px-4 py-2">Name</th>
+            <th className="border px-4 py-2">Role</th>
+            <th className="border px-4 py-2">Subject</th>
+            <th className="border px-4 py-2">Description</th>
+            <th className="border px-4 py-2">Urgency</th>
+            <th className="border px-4 py-2">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {complaintsList.map((complaint) => (
+            <tr key={complaint._id} className="hover:bg-gray-50">
+              <td className="border px-4 py-2">
+                {complaint.anonymous ? "Anonymous" : complaint.name || "Unknown"}
+              </td>
+              <td className="border px-4 py-2">
+                {complaint.anonymous ? "Hidden" : complaint.role || "N/A"}
+              </td>
+              <td className="border px-4 py-2">{complaint.subject}</td>
+              <td className="border px-4 py-2">{complaint.description}</td>
+              <td className="border px-4 py-2">{complaint.urgency || "Normal"}</td>
+              <td className="border px-4 py-2">
+                {complaint.created_at
+                  ? new Date(complaint.created_at).toLocaleDateString()
+                  : "N/A"}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-2">Latest Complaints</h2>
-      <ul className="space-y-4 mb-6">
-        {latestTwo.map(renderComplaint)}
-      </ul>
-
-      {remaining.length > 0 && (
-        <>
-          <h2 className="text-xl font-semibold mb-2">All Previous Complaints</h2>
-          <ul className="space-y-4">
-            {remaining.map(renderComplaint)}
-          </ul>
-        </>
-      )}
+    <div className="p-4">
+      {grouped["Pending"].length > 0 &&
+        renderTable(grouped["Pending"], "Pending", "text-yellow-600")}
+      {grouped["In Progress"].length > 0 &&
+        renderTable(grouped["In Progress"], "In Progress", "text-blue-600")}
+      {grouped["Resolved"].length > 0 &&
+        renderTable(grouped["Resolved"], "Resolved", "text-green-600")}
+      {grouped["Rejected"].length > 0 &&
+        renderTable(grouped["Rejected"], "Rejected", "text-red-600")}
     </div>
   );
 };

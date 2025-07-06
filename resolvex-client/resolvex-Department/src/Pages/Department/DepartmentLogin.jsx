@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-
-import logo from "../../assets/logo.png";
+import logo from "../../../../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 
 const departments = [

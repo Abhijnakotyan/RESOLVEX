@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Navbar from "../../components/Navbar";
+import Navbar from "../../Component/Navbar";
 import { FaExclamationCircle, FaCheckCircle, FaClock } from "react-icons/fa";
 
 function ViewComplaints() {

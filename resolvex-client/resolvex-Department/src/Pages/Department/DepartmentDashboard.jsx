@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import SidebarLayout from '../../components/Sidebar';
+import SidebarLayout from '../../Component/Sidebar';
 import Feedback from './DepartmentFeedback';
 import Rankings from './DepartmentRankings';
 import Home from './DepartmentHome';
@@ -14,7 +14,9 @@ const DepartmentDashboard = () => {
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState('home');
+  const [activeTab, setActiveTab] = useState(() => {
+  return localStorage.getItem('active_tab') || 'home';
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,24 +25,26 @@ const DepartmentDashboard = () => {
       navigate("/login");
     }
   }, []);
+  useEffect(() => {
+  localStorage.setItem('active_tab', activeTab);
+}, [activeTab]);
 
   useEffect(() => {
-    if (activeTab === 'home') {
-      const fetchComplaints = async () => {
-        try {
-          const res = await axios.get(`http://localhost:8000/api/complaints/department/${departmentId}`);
-          setComplaints(res.data);
-        } catch (err) {
-          console.error('Failed to fetch complaints:', err);
-          setError('Unable to load complaints. Please try again.');
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchComplaints();
+  const fetchComplaints = async () => {
+    try {
+      const res = await axios.get(`http://localhost:8000/api/complaints/department/${departmentId}`);
+      setComplaints(res.data);
+    } catch (err) {
+      console.error('Failed to fetch complaints:', err);
+      setError('Unable to load complaints. Please try again.');
+    } finally {
+      setLoading(false);
     }
-  }, [departmentName, activeTab]);
+  };
+
+  fetchComplaints();
+}, [departmentName]); 
+
 
   const renderContent = () => {
     switch (activeTab) {

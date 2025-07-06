@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { submitComplaint } from '../services/complaintService';
-import Navbar from './Navbar';
+import Navbar from '../../../shared/Navbar';
 import CustomButton from './Button';
 
-const departmentOptions = {
-  Programs: ['CSE', 'MCA', 'MBA'],
-  Hostel: [],
-  CCC: [],
-  Administration: [],
-};
+const departments = [
+  "CSE", "MCA", "MBA",
+  "ECE", "ISBS", "EEE", "MECH",
+  "Hostel", "CCC", "Administration"
+];
+
+const categories = [
+  "Academic",
+  "Infrastructure",
+  "Administrative",
+  "Technical",
+  "Other"
+];
 
 const urgencyLevels = ['Low', 'Medium', 'High'];
 
@@ -20,35 +27,25 @@ const ComplaintForm = () => {
 
   const [name, setName] = useState('');
   const [role, setRole] = useState('');
-  const [mainDept, setMainDept] = useState('');
-  const [subDept, setSubDept] = useState('');
+  const [department, setDepartment] = useState('');
+  const [category, setCategory] = useState('');
   const [subject, setSubject] = useState('');
   const [description, setDescription] = useState('');
   const [urgency, setUrgency] = useState('');
   const [anonymous, setAnonymous] = useState(anonymousFromLanding);
   const [formErrors, setFormErrors] = useState({});
 
-  const handleMainDeptChange = (e) => {
-    const selected = e.target.value;
-    setMainDept(selected);
-    setSubDept('');
-  };
-
   const validateForm = () => {
     const errors = {};
-
     if (!anonymous) {
       if (!name.trim()) errors.name = 'Name is required';
       if (!role.trim()) errors.role = 'Role is required';
     }
-
-    if (!mainDept) errors.mainDept = 'Department is required';
-    if (departmentOptions[mainDept]?.length > 0 && !subDept) {
-      errors.subDept = 'Sub-department is required';
-    }
+    if (!department) errors.department = 'Department is required';
+    if (!category) errors.category = 'Category is required';
     if (!subject.trim()) errors.subject = 'Subject is required';
     if (!description.trim()) errors.description = 'Description is required';
-    if (!urgency) errors.urgency = 'Urgency level is required';
+    if (!urgency) errors.urgency = 'Urgency is required';
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -59,8 +56,8 @@ const ComplaintForm = () => {
     if (!validateForm()) return;
 
     const complaintData = {
-      department: mainDept,
-      subDepartment: subDept || null,
+      department,
+      subDepartment: category,  // Storing category in subDepartment
       subject,
       description,
       urgency,
@@ -74,28 +71,25 @@ const ComplaintForm = () => {
 
     try {
       const response = await submitComplaint(complaintData);
-
       if (anonymous && response.tracking_token) {
-        alert(
-          `✅ Complaint submitted anonymously!\n🔐 Your tracking token: ${response.tracking_token}\n\n📌 Please save this token to track your complaint status later.`
-        );
+        alert(`✅ Complaint submitted anonymously!\n🔐 Tracking token: ${response.tracking_token}`);
       } else {
-        alert('✅ Complaint submitted successfully!');
+        alert("✅ Complaint submitted successfully!");
       }
 
       // Reset form
       setName('');
       setRole('');
-      setMainDept('');
-      setSubDept('');
+      setDepartment('');
+      setCategory('');
       setSubject('');
       setDescription('');
       setUrgency('');
-      setAnonymous(anonymousFromLanding); // Reset based on how they came
+      setAnonymous(anonymousFromLanding);
       setFormErrors({});
     } catch (error) {
-      console.error("Complaint submission failed:", error);
-      setFormErrors({ submit: 'Something went wrong. Please try again.' });
+      console.error("❌ Complaint submission failed:", error);
+      setFormErrors({ submit: "Something went wrong. Please try again." });
     }
   };
 
@@ -126,7 +120,7 @@ const ComplaintForm = () => {
             id="anonymous"
           />
           <label htmlFor="anonymous" className="text-gray-700 font-medium">
-            Submit as Anonymous (personal details will not be shared)
+            Submit as Anonymous
           </label>
         </div>
 
@@ -160,33 +154,31 @@ const ComplaintForm = () => {
           <label className="block text-gray-700 font-medium mb-1">Department</label>
           <select
             className="w-full border border-gray-300 p-2 rounded"
-            value={mainDept}
-            onChange={handleMainDeptChange}
+            value={department}
+            onChange={(e) => setDepartment(e.target.value)}
           >
             <option value="">Select Department</option>
-            {Object.keys(departmentOptions).map((dept) => (
+            {departments.map((dept) => (
               <option key={dept} value={dept}>{dept}</option>
             ))}
           </select>
-          {formErrors.mainDept && <p className="text-red-500 text-sm mt-1">{formErrors.mainDept}</p>}
+          {formErrors.department && <p className="text-red-500 text-sm mt-1">{formErrors.department}</p>}
         </div>
 
-        {departmentOptions[mainDept]?.length > 0 && (
-          <div className="mb-4">
-            <label className="block text-gray-700 font-medium mb-1">Sub Department</label>
-            <select
-              className="w-full border border-gray-300 p-2 rounded"
-              value={subDept}
-              onChange={(e) => setSubDept(e.target.value)}
-            >
-              <option value="">Select Sub Department</option>
-              {departmentOptions[mainDept].map((sub) => (
-                <option key={sub} value={sub}>{sub}</option>
-              ))}
-            </select>
-            {formErrors.subDept && <p className="text-red-500 text-sm mt-1">{formErrors.subDept}</p>}
-          </div>
-        )}
+        <div className="mb-4">
+          <label className="block text-gray-700 font-medium mb-1">Category</label>
+          <select
+            className="w-full border border-gray-300 p-2 rounded"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            <option value="">Select Category</option>
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
+          {formErrors.category && <p className="text-red-500 text-sm mt-1">{formErrors.category}</p>}
+        </div>
 
         <div className="mb-4">
           <label className="block text-gray-700 font-medium mb-1">Subject</label>
@@ -225,7 +217,7 @@ const ComplaintForm = () => {
         </div>
 
         <CustomButton
-          label={"Submit"}
+          label="Submit"
           onClick={handleSubmit}
           className="w-full bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition"
         />

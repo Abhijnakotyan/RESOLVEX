@@ -33,3 +33,34 @@ async def department_login(payload: DepartmentLoginSchema):
         "department_id": str(department["_id"]),
         "department_name": department["department_name"],
     }
+@router.get("/{department_id}/complaints/count")
+async def get_department_complaint_count(department_id: str):
+    try:
+        count = await db.complaints.count_documents({
+            "department_id": ObjectId(department_id)
+        })
+        return {"total_complaints": count}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/{department_id}/complaints/resolved-count")
+async def get_resolved_complaints_count(department_id:str):
+    try:
+        count=await db.complaints.count_documents({
+            "department_id":ObjectId(department_id),
+            "status":"Resolved"
+        })
+        return{"resolved_count":count}
+    except exception as e:
+        raise HTTPException(status_code=500,detail=str(e))
+
+@router.get("/{department_id}/complaints/pending-count")
+async def get_pending_complaints_count(department_id: str):
+    try:
+        count = await db.complaints.count_documents({
+            "department_id": ObjectId(department_id),
+            "status": "Pending"
+        })
+        return {"pending_count": count}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

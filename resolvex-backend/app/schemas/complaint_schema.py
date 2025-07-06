@@ -6,7 +6,7 @@ class ComplaintCreate(BaseModel):
     name: Optional[str]
     role: Optional[str]
     department: str
-    subDepartment: Optional[str]
+    category: Optional[str] = None
     subject: str
     description: str
     urgency: str
@@ -18,7 +18,7 @@ class ComplaintOut(BaseModel):
     role: Optional[str]
     department_id: Optional[str]
     department: Optional[str]
-    sub_department: Optional[str]
+    category: Optional[str] = None
     subject: Optional[str]
     description: Optional[str]
     urgency: Optional[str]

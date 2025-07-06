@@ -3,14 +3,18 @@ import axios from 'axios';
 
 function TrackComplaint() {
   const [token, setToken] = useState('');
-  const [result, setResult] = useState(null);
+  const [results, setResults] = useState([]);
+  const [error, setError] = useState('');
 
   const handleTrack = async () => {
+    setError('');
+    setResults([]);
     try {
       const res = await axios.get(`http://localhost:8000/api/complaints/track/${token}`);
-      setResult(res.data);
+      setResults(res.data); // data is an array
     } catch (err) {
-      setResult({ error: "Not found or invalid token." });
+      console.error(err);
+      setError("❌ Not found or invalid token.");
     }
   };
 
@@ -30,18 +34,19 @@ function TrackComplaint() {
       >
         Track
       </button>
-      {result && (
-        <div className="mt-4">
-          {result.error ? (
-            <p className="text-red-500">{result.error}</p>
-          ) : (
-            <div>
-              <p><strong>Subject:</strong> {result.subject}</p>
-              <p><strong>Status:</strong> {result.status}</p>
-              <p><strong>Department:</strong> {result.department}</p>
-              <p><strong>Submitted On:</strong> {new Date(result.submitted_on).toLocaleString()}</p>
+
+      {error && <p className="text-red-500 mt-4">{error}</p>}
+
+      {results.length > 0 && (
+        <div className="mt-6 space-y-4">
+          {results.map((complaint, index) => (
+            <div key={index} className="border p-4 rounded bg-gray-50">
+              <p><strong>Subject:</strong> {complaint.subject}</p>
+              <p><strong>Status:</strong> {complaint.status}</p>
+              <p><strong>Department:</strong> {complaint.department || complaint.department_id}</p>
+              <p><strong>Submitted On:</strong> {new Date(complaint.created_at).toLocaleString()}</p>
             </div>
-          )}
+          ))}
         </div>
       )}
     </div>
