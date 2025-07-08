@@ -22,14 +22,6 @@ const Navbar = () => {
           <button onClick={handleuserLogout} className="text-white font-bold text-base hover:underline">Logout</button>
         </>
       );
-    } else if (role === "department") {
-      return (
-        <>
-          <a href={`/department/${department.toLowerCase()}`} className="text-white font-bold text-base hover:underline">Home</a>
-          <a href={`/department/${department.toLowerCase()}/summary`} className="text-white font-bold text-base hover:underline">Summary</a>
-          <button onClick={handleLogout} className="text-white font-bold text-base hover:underline">Logout</button>
-        </>
-      );
     } else {
       // anonymous or default
       return (

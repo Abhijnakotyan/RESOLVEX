@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { submitComplaint } from '../services/complaintService';
-import Navbar from '../../../shared/Navbar';
+import Navbar from '../Component/Navbar';
 import CustomButton from './Button';
 
 const departments = [

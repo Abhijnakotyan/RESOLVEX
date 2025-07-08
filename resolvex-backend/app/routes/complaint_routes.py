@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from bson import ObjectId
 from typing import List
-
+from app.utils.serializer import serialize_doc
 from app.schemas.complaint_schema import ComplaintCreate, ComplaintOut
 from app.services import complaint_service
 from app.services.auth_service import get_current_user
@@ -56,7 +56,8 @@ async def get_complaints_by_department(department_id: str):
             "department_id": department_obj_id
         }).to_list(100)
 
-        return JSONResponse(content=jsonable_encoder(complaints))
+        serialized_complaints = [serialize_doc(c) for c in complaints]
+        return JSONResponse(content=serialized_complaints)
 
     except Exception as e:
         print("❌ Error in get_complaints_by_department:", e)
@@ -144,6 +145,9 @@ async def resolve_complaint(complaint_id: str):
 
 @router.patch("/{complaint_id}/progress")
 async def mark_complaint_in_progress(complaint_id: str):
+    if not ObjectId.is_valid(complaint_id):
+        raise HTTPException(status_code=400, detail="Invalid complaint ID")
+    
     result = await complaints_collection.update_one(
         {"_id": ObjectId(complaint_id)},
         {"$set": {"status": "In Progress"}}
