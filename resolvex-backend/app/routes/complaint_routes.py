@@ -20,15 +20,15 @@ complaints_collection = db["complaints"]
 async def submit_complaint(data: ComplaintCreate, user=Depends(get_current_user)):
     return await complaint_service.create_complaint(data, user)
 
-
 @router.get("/track/{token}")
 async def track_complaint(token: str):
     complaints = await complaints_collection.find({"tracking_token": token}).to_list(length=100)
-    
+
     if not complaints:
         raise HTTPException(status_code=404, detail="No complaints found for this token")
 
-    return JSONResponse(content=jsonable_encoder(complaints))
+    return JSONResponse(content=[serialize_doc(c) for c in complaints])
+
 
 
 @router.get("/my", response_model=List[ComplaintOut])

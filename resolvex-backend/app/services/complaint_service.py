@@ -5,7 +5,6 @@ from datetime import datetime
 from bson import ObjectId
 
 async def create_complaint(data, user=None):
-
     department = await db.departments.find_one({"department_name": data.department})
     if not department:
         raise Exception("❌ Department not found")
@@ -14,6 +13,7 @@ async def create_complaint(data, user=None):
         "name": data.name if not data.anonymous else None,
         "role": data.role if not data.anonymous else None,
         "department_id": department["_id"],  
+        "department_name": department["department_name"],  # ✅ Add this line
         "category": data.category,
         "subject": data.subject,
         "description": data.description,
