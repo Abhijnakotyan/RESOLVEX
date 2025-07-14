@@ -40,8 +40,11 @@ async def get_complaint_by_token(token):
     return await db.complaints.find_one({"tracking_token": token})
 
 async def get_complaints_by_user(user_id):
+    if isinstance(user_id, str):
+        user_id = ObjectId(user_id)
+
     complaints = await db.complaints.find({
-        "user_id": ObjectId(user_id)
+        "user_id": user_id
     }).to_list(length=100)
 
     results = []
@@ -63,7 +66,7 @@ async def get_complaints_by_user(user_id):
             user_id=str(c.get("user_id", "")),
             tracking_token=c.get("tracking_token", ""),
             created_at=c.get("created_at"),
-            department=department_name  # You need to add this field to ComplaintOut
+            department=department_name
         ))
 
     return results

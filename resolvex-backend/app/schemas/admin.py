@@ -4,5 +4,6 @@ class AdminLogin(BaseModel):
     email: str
     password: str
 
-class AdminOTPVerify(BaseModel):
-    otp: str  # No email here now
+class OTPVerify(BaseModel):
+    otp: str
+    email: str 

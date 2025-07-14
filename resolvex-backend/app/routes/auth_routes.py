@@ -7,8 +7,10 @@ from app.services.auth_service import get_current_user
 from app.models.user_model import User
 
 
+
 router = APIRouter(prefix="/auth", tags=["Auth"])
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 @router.post("/register")
 async def register_user(user: UserCreate):

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import CustomButton from "../../Component/Button";
 
+
 function RegistrationPage({ embedded = false }) {
   const [form, setForm] = useState({
     name: "",
@@ -42,7 +43,7 @@ function RegistrationPage({ embedded = false }) {
         password: form.password,
       });
       alert("Registered Successfully!");
-      window.location.href = "/login";
+      window.location.href = "/authCard"; // Redirect to login page
     } catch (err) {
       const errorMsg = err.response?.data?.detail?.[0]?.msg || "Registration Failed";
       alert(errorMsg);
@@ -51,14 +52,14 @@ function RegistrationPage({ embedded = false }) {
 
   const content = (
     <>
-      <h2 className="text-center text-2xl font-bold mb-6 text-teal-600">Create an Account</h2>
+      <h2 className="text-center text-2xl font-bold mb-6 text-teal-200">Create an Account</h2>
       <input
         type="text"
         name="name"
         placeholder="Full Name"
         value={form.name}
         onChange={handleChange}
-        className={`w-full p-3 border rounded-lg mb-3 ${errors.name ? "border-red-500" : ""}`}
+        className={`w-full p-3 text-white bg-white/10 border rounded-2xl mb-3 ${errors.name ? "border-red-500" : ""}`}
       />
       {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
 
@@ -68,7 +69,7 @@ function RegistrationPage({ embedded = false }) {
         placeholder="Email"
         value={form.email}
         onChange={handleChange}
-        className={`w-full p-3 border rounded-lg mb-3 ${errors.email ? "border-red-500" : ""}`}
+        className={`w-full p-3 text-white  bg-white/10 border rounded-2xl mb-3 ${errors.email ? "border-red-500" : ""}`}
       />
       {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
 
@@ -78,7 +79,7 @@ function RegistrationPage({ embedded = false }) {
         placeholder="Password"
         value={form.password}
         onChange={handleChange}
-        className={`w-full p-3 border rounded-lg mb-3 ${errors.password ? "border-red-500" : ""}`}
+        className={`w-full p-3 text-white bg-white/10 border rounded-2xl mb-3 ${errors.password ? "border-red-500" : ""}`}
       />
       {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
 
@@ -88,7 +89,7 @@ function RegistrationPage({ embedded = false }) {
         placeholder="Confirm Password"
         value={form.confirmPassword}
         onChange={handleChange}
-        className={`w-full p-3 border rounded-lg mb-3 ${errors.confirmPassword ? "border-red-500" : ""}`}
+        className={`w-full p-3 text-white bg-white/10 border rounded-2xl mb-3 ${errors.confirmPassword ? "border-red-500" : ""}`}
       />
       {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword}</p>}
 

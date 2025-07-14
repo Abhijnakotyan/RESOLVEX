@@ -15,15 +15,16 @@ def generate_otp(email: str):
     otp_store["email"] = email
     return otp
 
-def verify_otp(otp: str):
-    if otp_store["otp"] != otp:
+def verify_otp(email: str, otp: str):
+    if otp_store.get("email") != email:
+        return False, None
+    if otp_store.get("otp") != otp:
         return False, None
     if datetime.utcnow() > otp_store["expires"]:
         clear_otp()
         return False, None
-    email = otp_store["email"]
-    clear_otp()
     return True, email
+
 
 def clear_otp():
     otp_store["otp"] = None

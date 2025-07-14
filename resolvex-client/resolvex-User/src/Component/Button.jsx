@@ -9,13 +9,13 @@ const CustomButton = ({ label, onClick }) => {
       variant="contained"
       onClick={onClick}
       sx={{
-        mt: 2,
+        mt: 0.4,
         p:2,
         backgroundColor: "#57cc99",
         color: "#fff",
         fontWeight: "bold",
         textTransform: "none",
-        borderRadius: "8px",
+        borderRadius: "16px",
         '&:hover': {
           backgroundColor: "#4cbf87"
         }

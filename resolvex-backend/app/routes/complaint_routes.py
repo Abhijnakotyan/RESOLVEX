@@ -37,7 +37,7 @@ async def my_complaints(user=Depends(get_current_user)):
         raise HTTPException(status_code=401, detail="Login required")
 
     try:
-        complaints = await get_complaints_by_user(user["_id"])
+        complaints = await get_complaints_by_user(user["id"])
         return complaints
     except Exception as e:
         print("❌ Error in /my route:", e)
