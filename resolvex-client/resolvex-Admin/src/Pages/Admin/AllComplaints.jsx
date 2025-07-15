@@ -41,7 +41,7 @@ const AllComplaints = () => {
   if (error) return <div className="text-red-500">{error}</div>;
 
   return (
-    <SidebarLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+    
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold text-gray-800">All Department Complaints</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -58,7 +58,7 @@ const AllComplaints = () => {
         ))}
       </div>
     </div>
-    </SidebarLayout>
+   
   );
 };
 

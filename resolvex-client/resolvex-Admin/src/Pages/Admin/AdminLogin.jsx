@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import API from '../../api/axios';
 
 function AdminLogin() {
   const [step, setStep] = useState(1);
@@ -8,41 +10,50 @@ function AdminLogin() {
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const navigate = useNavigate();
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      if (email && password) {
-        setStep(2);
-        setMessage('OTP sent to your email');
-      } else {
-        setMessage('Please fill in all fields');
-      }
+    setMessage('');
+
+    try {
+      const res = await API.post("/admin/login", { email, password });
+      setStep(2);
+      setMessage(res.data.message);  // OTP sent
+    } catch (err) {
+      console.error(err);
+      setMessage(err.response?.data?.detail || "Login failed. Try again.");
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Simulate OTP verification
-    setTimeout(() => {
-      if (otp.length === 6) {
-        setMessage('Login successful!');
-        // In real app: navigate('/admin/dashboard');
-      } else {
-        setMessage('Please enter a valid 6-digit OTP');
-      }
+    setMessage('');
+
+    try {
+      const res = await API.post("/admin/verify-otp", { email, otp });
+      const token = res.data.access_token;
+
+      localStorage.setItem("token", token);
+
+      setMessage("Login successful!");
+      navigate("/admin/dashboard");
+    } catch (err) {
+      console.error(err);
+      setMessage(err.response?.data?.detail || "OTP verification failed.");
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-purple-50 to-indigo-100 px-3 py-6 sm:px-6 lg:px-8">
       <div className="w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl bg-white rounded-2xl shadow-2xl p-6 sm:p-8 md:p-10 space-y-6 sm:space-y-8 transition-all duration-300 ease-in-out">
+
         {/* Header */}
         <div className="text-center space-y-2">
           <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
@@ -58,7 +69,7 @@ function AdminLogin() {
           </p>
         </div>
 
-        {/* Message Alert */}
+        {/* Message */}
         {message && (
           <div
             className={`text-center text-xs sm:text-sm px-3 py-2 sm:px-4 sm:py-3 rounded-lg font-medium transition-all duration-200 ${
@@ -73,7 +84,7 @@ function AdminLogin() {
 
         {/* Step 1: Login Form */}
         {step === 1 ? (
-          <div className="space-y-4 sm:space-y-5">
+          <form onSubmit={handleLogin} className="space-y-4 sm:space-y-5">
             <div>
               <label htmlFor="email" className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1 sm:mb-2">
                 Admin Email
@@ -105,7 +116,7 @@ function AdminLogin() {
             </div>
 
             <button
-              onClick={handleLogin}
+              type="submit"
               disabled={isLoading}
               className={`w-full py-2.5 sm:py-3 rounded-lg font-semibold text-white shadow-lg transition-all duration-200 text-sm sm:text-base ${
                 isLoading
@@ -113,22 +124,12 @@ function AdminLogin() {
                   : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 hover:shadow-xl transform hover:scale-105 active:scale-95'
               }`}
             >
-              {isLoading ? (
-                <span className="flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Sending...
-                </span>
-              ) : (
-                'Send OTP'
-              )}
+              {isLoading ? 'Sending...' : 'Send OTP'}
             </button>
-          </div>
+          </form>
         ) : (
-          /* Step 2: OTP Verification Form */
-          <div className="space-y-4 sm:space-y-5">
+          /* Step 2: OTP Form */
+          <form onSubmit={handleVerifyOtp} className="space-y-4 sm:space-y-5">
             <div>
               <label htmlFor="otp" className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1 sm:mb-2">
                 One-Time Password
@@ -148,7 +149,7 @@ function AdminLogin() {
             </div>
 
             <button
-              onClick={handleVerifyOtp}
+              type="submit"
               disabled={isLoading}
               className={`w-full py-2.5 sm:py-3 rounded-lg font-semibold text-white shadow-lg transition-all duration-200 text-sm sm:text-base ${
                 isLoading
@@ -156,17 +157,7 @@ function AdminLogin() {
                   : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 hover:shadow-xl transform hover:scale-105 active:scale-95'
               }`}
             >
-              {isLoading ? (
-                <span className="flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Verifying...
-                </span>
-              ) : (
-                'Verify OTP'
-              )}
+              {isLoading ? 'Verifying...' : 'Verify OTP'}
             </button>
 
             <div className="text-center text-xs sm:text-sm text-gray-500 pt-2">
@@ -183,7 +174,7 @@ function AdminLogin() {
                 Resend OTP
               </button>
             </div>
-          </div>
+          </form>
         )}
 
         {/* Footer */}

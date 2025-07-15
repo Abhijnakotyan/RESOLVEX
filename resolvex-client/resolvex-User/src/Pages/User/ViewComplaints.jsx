@@ -11,6 +11,7 @@ import UserFeedback from "./UserFeedback";
 function ViewComplaints() {
   const [complaints, setComplaints] = useState([]);
   const [error, setError] = useState("");
+  const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [activeFeedback, setActiveFeedback] = useState(null); // 💡 To track which complaint to show feedback form for
@@ -113,10 +114,13 @@ function ViewComplaints() {
                     {complaints.map((comp, index) => (
                       <React.Fragment key={index}>
                         <tr className="border-t border-gray-200 hover:bg-gray-50">
-                          <td className="px-4 py-2 text-gray-700 font-medium">
+                         <td
+                            className="px-4 py-2 text-gray-700 font-medium cursor-pointer  hover:text-blue-600"
+                            onClick={() => setSelectedComplaint(comp)}
+                          >
                             {comp.subject}
                           </td>
-                          <td className="px-4 py-2 text-gray-600">
+                              <td className="px-4 py-2 text-gray-600">
                             {comp.department}
                           </td>
                           <td className="px-4 py-2 text-gray-600">
@@ -161,7 +165,35 @@ function ViewComplaints() {
           </div>
         </div>
       </div>
+      {selectedComplaint && (  // ✅ now it's outside properly
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="bg-white rounded-lg shadow-xl p-6 max-w-lg w-full relative">
+      <h3 className="text-xl font-semibold text-gray-800 mb-4">Complaint Details</h3>
+
+      <div className="space-y-2 text-sm text-gray-700">
+        <p><strong>Subject:</strong> {selectedComplaint.subject}</p>
+        <p><strong>Department:</strong> {selectedComplaint.department}</p>
+        <p><strong>Category:</strong> {selectedComplaint.category || "N/A"}</p>
+        <p><strong>Description:</strong> {selectedComplaint.description}</p>
+        <p><strong>Urgency:</strong> {selectedComplaint.urgency}</p>
+        <p><strong>Status:</strong> {selectedComplaint.status}</p>
+        <p><strong>Submitted At:</strong> {new Date(selectedComplaint.created_at).toLocaleString()}</p>
+        {selectedComplaint.tracking_token && (
+          <p><strong>Tracking Token:</strong> {selectedComplaint.tracking_token}</p>
+        )}
+      </div>
+
+      <button
+        onClick={() => setSelectedComplaint(null)}
+        className="mt-6 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 w-full"
+      >
+        Close
+      </button>
     </div>
+  </div>
+)}
+    </div>
+    
   );
 }
 

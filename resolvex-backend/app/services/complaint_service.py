@@ -23,8 +23,10 @@ async def create_complaint(data, user=None):
         "created_at": datetime.utcnow(),
     }
 
-    if user:
-        complaint["user_id"] = ObjectId(user["_id"])  
+    if user and not data.anonymous:
+        complaint["user_id"] = ObjectId(user["id"])
+
+
 
     if data.anonymous:
         complaint["tracking_token"] = generate_tracking_token()
@@ -44,7 +46,8 @@ async def get_complaints_by_user(user_id):
         user_id = ObjectId(user_id)
 
     complaints = await db.complaints.find({
-        "user_id": user_id
+        "user_id": user_id,
+        "anonymous": False
     }).to_list(length=100)
 
     results = []

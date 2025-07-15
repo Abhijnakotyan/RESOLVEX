@@ -10,6 +10,11 @@ const DepartmentComplaintList = () => {
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('complaints');
   const navigate = useNavigate();
+  const goToTab = (tabId) => {
+  localStorage.setItem('admin_active_tab', tabId);
+  navigate('/admin/dashboard');
+};
+
 
   useEffect(() => {
     const fetchComplaints = async () => {
@@ -29,12 +34,10 @@ const DepartmentComplaintList = () => {
   return (
     <SidebarLayout activeTab={activeTab} setActiveTab={setActiveTab}>
       <div className="mb-4">
-        <button
-          onClick={() => navigate('/admin/complaints')}
-          className="text-sm text-[#57cc99] underline"
-        >
-          ← Back to All Complaints
-        </button>
+        <button onClick={() => goToTab('complaints')}>
+        ← Back to All Complaints
+      </button>
+
       </div>
 
       <h2 className="text-2xl font-semibold text-gray-800 mb-4">{department} Department Complaints</h2>
@@ -53,7 +56,7 @@ const DepartmentComplaintList = () => {
             <p><strong>Description:</strong> {comp.description}</p>
             <p><strong>Urgency:</strong> {comp.urgency}</p>
             <p><strong>Status:</strong>{comp.status}</p>
-            <p><strong>Date Submitted:</strong> {new Date(comp.date_submitted).toLocaleDateString()}</p>
+            <p><strong>Date Submitted:</strong> {new Date(comp.created_at).toLocaleDateString()}</p>
           </div>
         ))
       )}

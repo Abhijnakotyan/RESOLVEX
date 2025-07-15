@@ -1,8 +1,8 @@
-from motor.motor_asyncio import AsyncIOMotorClient,AsyncIOMotorDatabase
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
+from app.config import MONGODB_URL  # import the correct URL from config
 
-MONGO_URI = "mongodb://localhost:27017"
-client = AsyncIOMotorClient(MONGO_URI)
-db = client["resolvex_db"]
+client = AsyncIOMotorClient(MONGODB_URL)
+db = client["resolvex"]  # Use the name of your Atlas DB
 complaints_collection = db["complaints"]
 
 def get_db() -> AsyncIOMotorDatabase:

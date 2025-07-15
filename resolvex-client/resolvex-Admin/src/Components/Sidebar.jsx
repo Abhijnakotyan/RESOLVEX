@@ -4,13 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import logo from '../../../assets/logo.png'; // ✅ adjust path if needed
 
 const navItems = [
-  { id: 'home', label: 'Home', icon: Home, path: '/admin/home' },
-  { id: 'complaints', label: 'Complaints', icon: AlertTriangle, path: '/admin/complaints' },
-  { id: 'feedback', label: 'Feedback', icon: Star, path: '/admin/feedback' },
-  { id: 'alerts', label: 'Alerts', icon: AlertTriangle, path: '/admin/alerts' },
-  { id: 'rankings', label: 'Rankings', icon: BarChart2, path: '/admin/rankings' },
+  { id: 'home', label: 'Home', icon: Home },
+  { id: 'complaints', label: 'Complaints', icon: AlertTriangle },
+  { id: 'feedback', label: 'Feedback', icon: Star },
+  { id: 'alerts', label: 'Alerts', icon: AlertTriangle },
+  { id: 'rankings', label: 'Rankings', icon: BarChart2 },
 ];
-
 const SidebarLayout = ({ activeTab, setActiveTab, children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const navigate = useNavigate();
@@ -32,10 +31,10 @@ const SidebarLayout = ({ activeTab, setActiveTab, children }) => {
                 <button
                   key={item.id}
                   onClick={() => {
-                    setActiveTab(item.id);
-                    navigate(item.path);
-                  }}
-                  className={`flex items-center px-4 py-2 rounded-lg transition ${
+                  setActiveTab(item.id);           // switch tab inside dashboard
+                  navigate('/admin/dashboard');    // stay on same page
+                }}
+                    className={`flex items-center px-4 py-2 rounded-lg transition ${
                     isActive ? 'bg-white text-[#57cc99]' : 'hover:bg-[#45b87e]'
                   }`}
                 >

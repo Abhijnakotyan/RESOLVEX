@@ -29,7 +29,7 @@ const ComplaintForm = () => {
   const [description, setDescription] = useState('');
   const [urgency, setUrgency] = useState('');
   const [formErrors, setFormErrors] = useState({});
-
+  const [successMessage, setSuccessMessage] = useState('');
   const showNavbar = !isUser || anonymous;
   const showSidebar = isUser && !anonymous;
 
@@ -63,7 +63,7 @@ const ComplaintForm = () => {
 
     const complaintData = {
       department,
-      subDepartment: category,
+      category,
       subject,
       description,
       urgency,
@@ -75,12 +75,12 @@ const ComplaintForm = () => {
       complaintData.role = role;
     }
 
-    try {
+      try {
       const response = await submitComplaint(complaintData);
       if (anonymous && response.tracking_token) {
-        alert(`✅ Complaint submitted anonymously!\n🔐 Tracking token: ${response.tracking_token}`);
+        setSuccessMessage(`✅ Complaint submitted anonymously!\n🔐 Tracking Token: ${response.tracking_token}`);
       } else {
-        alert("✅ Complaint submitted successfully!");
+        setSuccessMessage("✅ Complaint submitted successfully!");
       }
 
       // Reset form
@@ -117,7 +117,7 @@ const ComplaintForm = () => {
           }
         `}
       >
-        <form className="bg-white rounded-xl shadow-lg w-full max-w-3xl p-8">
+        <form className="bg-white rounded-xl rounded-r-3xl rounded-l-3xl shadow-lg w-full max-w-5xl p-8">
           <h2 className="text-2xl font-bold mb-6 text-center">Submit a Complaint</h2>
 
           {formErrors.submit && (
@@ -251,6 +251,22 @@ const ComplaintForm = () => {
           />
         </form>
       </div>
+      {successMessage && (
+      <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
+        <div className="bg-white rounded-xl shadow-xl p-6 w-[90%] max-w-md text-center relative">
+          <h3 className="text-lg font-semibold text-green-700 mb-4 whitespace-pre-line">
+            {successMessage}
+          </h3>
+          <button
+            onClick={() => setSuccessMessage('')}
+            className="mt-4 px-4 py-2 bg-[#57c999] hover:bg-green-700 text-white rounded font-semibold transition"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    )}
+
     </div>
   );
 };

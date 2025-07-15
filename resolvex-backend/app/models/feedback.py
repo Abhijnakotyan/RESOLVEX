@@ -1,5 +1,3 @@
-from datetime import datetime
-
 def feedback_model(feedback):
     return {
         "id": str(feedback["_id"]),
